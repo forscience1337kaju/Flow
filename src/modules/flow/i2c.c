@@ -256,7 +256,7 @@ void I2C1_ER_IRQHandler(void) {
 void update_TX_buffer(float pixel_flow_x, float pixel_flow_y,
 		float flow_comp_m_x, float flow_comp_m_y, uint8_t qual,
 		float ground_distance, float gyro_x_rate, float gyro_y_rate,
-		float gyro_z_rate, int16_t gyro_temp, legacy_12c_data_t *pd) {
+        float gyro_z_rate, int16_t gyro_temp,uint32_t time_for_optflow, legacy_12c_data_t *pd) {
 	static uint16_t frame_count = 0;
 
 	i2c_frame f;
@@ -267,7 +267,7 @@ void update_TX_buffer(float pixel_flow_x, float pixel_flow_y,
 	f.pixel_flow_y_sum = pixel_flow_y * 10.0f;
 	f.flow_comp_m_x = flow_comp_m_x * 1000;
 	f.flow_comp_m_y = flow_comp_m_y * 1000;
-	f.qual = qual;
+    f.qual = qual;
 	f.ground_distance = ground_distance * 1000;
 
 	f.gyro_x_rate = gyro_x_rate * getGyroScalingFactor();
@@ -346,10 +346,9 @@ void update_TX_buffer(float pixel_flow_x, float pixel_flow_y,
 	f_integral.integration_timespan = integration_timespan;     //microseconds
 	f_integral.ground_distance = ground_distance * 1000;		    //mmeters
 	f_integral.sonar_timestamp = time_since_last_sonar_update;  //microseconds
-	f_integral.qual =
-			(uint8_t) (accumulated_quality / accumulated_framecount); //0-255 linear quality measurement 0=bad, 255=best
+    f_integral.qual = (uint8_t) (accumulated_quality / accumulated_framecount); //0-255 linear quality measurement 0=bad, 255=best
 	f_integral.gyro_temperature = gyro_temp;//Temperature * 100 in centi-degrees Celsius
-
+    f_integral.time_needed = time_for_optflow;
 	notpublishedIndexFrame1 = 1 - publishedIndexFrame1; // choose not the current published 1 buffer
 	notpublishedIndexFrame2 = 1 - publishedIndexFrame2; // choose not the current published 2 buffer
 
