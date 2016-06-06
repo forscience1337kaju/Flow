@@ -256,7 +256,7 @@ void I2C1_ER_IRQHandler(void) {
 void update_TX_buffer(float pixel_flow_x, float pixel_flow_y,
 		float flow_comp_m_x, float flow_comp_m_y, uint8_t qual,
 		float ground_distance, float gyro_x_rate, float gyro_y_rate,
-        float gyro_z_rate, int16_t gyro_temp,uint32_t time_for_optflow, legacy_12c_data_t *pd) {
+        float gyro_z_rate, int16_t gyro_temp, uint8_t rec_qual, float pat_x_dist, float pat_y_dist, legacy_12c_data_t *pd) {
 	static uint16_t frame_count = 0;
 
 	i2c_frame f;
@@ -348,8 +348,13 @@ void update_TX_buffer(float pixel_flow_x, float pixel_flow_y,
 	f_integral.sonar_timestamp = time_since_last_sonar_update;  //microseconds
     f_integral.qual = (uint8_t) (accumulated_quality / accumulated_framecount); //0-255 linear quality measurement 0=bad, 255=best
 	f_integral.gyro_temperature = gyro_temp;//Temperature * 100 in centi-degrees Celsius
-    f_integral.time_needed = time_for_optflow;
-	notpublishedIndexFrame1 = 1 - publishedIndexFrame1; // choose not the current published 1 buffer
+
+    // newly added for pattern recognition function
+    f_integral.rec_qual = rec_qual;
+    f_integral.pat_x_dist = pat_x_dist;
+    f_integral.pat_y_dist = pat_y_dist;
+
+    notpublishedIndexFrame1 = 1 - publishedIndexFrame1; // choose not the current published 1 buffer
 	notpublishedIndexFrame2 = 1 - publishedIndexFrame2; // choose not the current published 2 buffer
 
 	// HACK!! To get the data
